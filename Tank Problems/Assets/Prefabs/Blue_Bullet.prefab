@@ -11,11 +11,10 @@ GameObject:
   - component: {fileID: 728228642123184279}
   - component: {fileID: 5337612975492559453}
   - component: {fileID: 307010573373623101}
-  - component: {fileID: 5033000080022635147}
   - component: {fileID: 8818528371602412563}
   m_Layer: 9
   m_Name: Blue_Bullet
-  m_TagString: Untagged
+  m_TagString: Player2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -106,22 +105,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!58 &5033000080022635147
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7373896107509992363}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 5bc7f2d4de722354ea0391f1757d697c, type: 2}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.02, y: 0.39}
-  serializedVersion: 2
-  m_Radius: 0.81
 --- !u!114 &8818528371602412563
 MonoBehaviour:
   m_ObjectHideFlags: 0

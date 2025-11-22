@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 9089807041021058457}
   - component: {fileID: 4480318533223061331}
   - component: {fileID: 8105620825934835251}
-  - component: {fileID: 3595708306177451909}
   - component: {fileID: 1035827483237363997}
   m_Layer: 9
   m_Name: Red_Bullet
@@ -106,22 +105,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 0
---- !u!58 &3595708306177451909
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1327185574366752421}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 6200000, guid: 5bc7f2d4de722354ea0391f1757d697c, type: 2}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0.02, y: 0.39}
-  serializedVersion: 2
-  m_Radius: 0.81
 --- !u!114 &1035827483237363997
 MonoBehaviour:
   m_ObjectHideFlags: 0
