@@ -1,63 +1,84 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    public TankController player1;
-    public TankController player2;
-    public Health p1Health;
-    public Health p2Health;
-
-    public Transform[] spawnPoints; // list of spawn transforms
+    [Header("Tanks")]
+    public List<Health> tanks = new List<Health>();
     public float respawnDelay = 2f;
 
-    public Text scoreTextP1;
-    public Text scoreTextP2;
+    [Header("Score Settings")]
+    public int scoreToWin = 5;
+    public Text player1ScoreText;
+    public Text player2ScoreText;
 
-    int scoreP1 = 0;
-    int scoreP2 = 0;
+    private Dictionary<int, int> playerScores = new Dictionary<int, int>();
 
     void Start()
     {
-        UpdateScores();
-    }
-
-    public void OnTankDestroyed(int victimId, int attackerId)
-    {
-        if (attackerId == 1) scoreP1++;
-        if (attackerId == 2) scoreP2++;
-        UpdateScores();
-
-        // Start respawn coroutine for victim
-        if (victimId == 1)
-            StartCoroutine(RespawnPlayer(player1.gameObject, p1Health, 1));
-        else if (victimId == 2)
-            StartCoroutine(RespawnPlayer(player2.gameObject, p2Health, 2));
-    }
-
-    IEnumerator RespawnPlayer(GameObject tankObj, Health health, int playerId)
-    {
-        // find a spawn point (simple round-robin or random)
-        Transform spawn = spawnPoints[Random.Range(0, spawnPoints.Length)];
-        yield return new WaitForSeconds(respawnDelay);
-
-        // Set position and reactivate
-        tankObj.transform.position = spawn.position;
-        tankObj.transform.rotation = Quaternion.identity;
-        health.playerId = playerId;
-        health.Respawn();
-
-        TankController tc = tankObj.GetComponent<TankController>();
-        if (tc != null)
+        // Initialize scores
+        foreach (var t in tanks)
         {
-            tc.ResetForRespawn(spawn.position, 0f);
+            playerScores[t.playerId] = 0;
+            t.gameManager = this; // assign GameManager to each tank automatically
+        }
+
+        UpdateScoreUI();
+    }
+
+    public void OnTankDestroyed(int destroyedPlayerId, int attackerPlayerId)
+    {
+        Debug.Log($"Player {destroyedPlayerId} destroyed by {attackerPlayerId}");
+
+        // Increment score
+        if (attackerPlayerId != destroyedPlayerId && playerScores.ContainsKey(attackerPlayerId))
+        {
+            playerScores[attackerPlayerId]++;
+            UpdateScoreUI();
+
+            // Check for win
+            if (playerScores[attackerPlayerId] >= scoreToWin)
+            {
+                Debug.Log($"Player {attackerPlayerId} wins!");
+                // Optional: show a UI message or load a win scene
+            }
+        }
+
+        // Respawn tank
+        Health destroyedTank = tanks.Find(t => t.playerId == destroyedPlayerId);
+        if (destroyedTank != null)
+            StartCoroutine(RespawnTank(destroyedTank, respawnDelay));
+    }
+
+    IEnumerator RespawnTank(Health tank, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        tank.Respawn();
+        tank.transform.position = GetSpawnPosition(tank.playerId);
+        tank.transform.rotation = Quaternion.identity;
+
+        Rigidbody2D rb = tank.GetComponent<Rigidbody2D>();
+        if (rb != null)
+            rb.velocity = Vector2.zero;
+    }
+
+    Vector3 GetSpawnPosition(int playerId)
+    {
+        switch (playerId)
+        {
+            case 1: return new Vector3(-4, -4, 0);
+            case 2: return new Vector3(4, 4, 0);
+            default: return Vector3.zero;
         }
     }
 
-    void UpdateScores()
+    void UpdateScoreUI()
     {
-        if (scoreTextP1) scoreTextP1.text = scoreP1.ToString();
-        if (scoreTextP2) scoreTextP2.text = scoreP2.ToString();
+        if (player1ScoreText != null)
+            player1ScoreText.text = "Player 1: " + playerScores[1];
+        if (player2ScoreText != null)
+            player2ScoreText.text = "Player 2: " + playerScores[2];
     }
 }

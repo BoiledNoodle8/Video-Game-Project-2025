@@ -42,11 +42,11 @@ public class Bullet : MonoBehaviour
         {
             // Avoid friendly fire: check owner
             TankController hitTank = collision.gameObject.GetComponent<TankController>();
-            if (hitTank != null && hitTank.playerId == ownerId)
+            //if (hitTank != null && hitTank.playerId == ownerId)
             {
                 // Option: ignore friendly hits
-                Physics2D.IgnoreCollision(collision.collider, GetComponent<Collider2D>());
-                return;
+                //Physics2D.IgnoreCollision(collision.collider, GetComponent<Collider2D>());
+                //return;
             }
 
             // Damage logic
