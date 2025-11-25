@@ -89,4 +89,4 @@ MonoBehaviour:
   ownerId: 1
   remainingBounces: 3
   lifeTime: 5
-  hitEffectPrefab: {fileID: 0}
+  hitEffectPrefab: {fileID: 8367907410985086596, guid: 0b493b97a8e419d46903c1b023460740, type: 3}

@@ -28,6 +28,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5937401282429397625, guid: f1f12948302504141844601b5fb04f25, type: 3}
+      propertyPath: driveSpeed
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5937401282429397625, guid: f1f12948302504141844601b5fb04f25, type: 3}
       propertyPath: bulletSpeed
       value: 8
       objectReference: {fileID: 0}

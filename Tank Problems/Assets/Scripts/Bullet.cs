@@ -5,7 +5,6 @@ public class Bullet : MonoBehaviour
     public int ownerId = 0;
     public int remainingBounces = 3;
     public float lifeTime = 6f;
-    public GameObject hitEffectPrefab;
 
     Rigidbody2D rb;
 
@@ -40,15 +39,6 @@ public class Bullet : MonoBehaviour
         // If hit a tank
         if (collision.gameObject.CompareTag("Player1") || collision.gameObject.CompareTag("Player2"))
         {
-            // Avoid friendly fire: check owner
-            TankController hitTank = collision.gameObject.GetComponent<TankController>();
-            //if (hitTank != null && hitTank.playerId == ownerId)
-            {
-                // Option: ignore friendly hits
-                //Physics2D.IgnoreCollision(collision.collider, GetComponent<Collider2D>());
-                //return;
-            }
-
             // Damage logic
             Health h = collision.gameObject.GetComponent<Health>();
             if (h != null)
@@ -66,8 +56,9 @@ public class Bullet : MonoBehaviour
 
     void Explode()
     {
-        if (hitEffectPrefab != null)
-            Instantiate(hitEffectPrefab, transform.position, Quaternion.identity);
+        // NOTE: We intentionally do NOT spawn a generic hit effect here.
+        // Tank death effects should be spawned by the Health.Die(...) method,
+        // so visual effects only occur on actual tank deaths.
         Destroy(gameObject);
     }
 }

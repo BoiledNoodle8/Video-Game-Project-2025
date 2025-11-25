@@ -96,6 +96,10 @@ PrefabInstance:
       value: 271
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
+      propertyPath: turnSpeed
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: forwardKey
       value: 261
       objectReference: {fileID: 0}

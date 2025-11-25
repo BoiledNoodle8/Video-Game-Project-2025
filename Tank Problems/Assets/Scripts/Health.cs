@@ -4,8 +4,12 @@ public class Health : MonoBehaviour
 {
     public int maxHP = 3;
     int hp;
+
     public GameManager gameManager;
     public int playerId;
+
+    // ? NEW: Drop your hit/death effect here in the Inspector
+    public GameObject deathEffectPrefab;
 
     void Awake()
     {
@@ -23,11 +27,15 @@ public class Health : MonoBehaviour
 
     void Die(int attackerId)
     {
-        // Tell GameManager for scoring/respawn
+        // Spawn the death effect ONLY when tank actually dies
+        if (deathEffectPrefab != null)
+            Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+
+        // Send score info to GameManager
         if (gameManager != null)
             gameManager.OnTankDestroyed(playerId, attackerId);
 
-        // Optionally disable visuals until respawn; GameManager will handle respawn
+        // Disable tank until respawn
         gameObject.SetActive(false);
     }
 
