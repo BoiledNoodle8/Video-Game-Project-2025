@@ -1,128 +1,188 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Tanks & UI (assign in Inspector)")]
-    public List<Health> tanks = new List<Health>();
-    public Text player1ScoreText;
-    public Text player2ScoreText;
+    [Header("Tank References (Assign in Inspector)")]
+    public List<Health> tanks;
 
-    [Header("Win settings")]
-    public int winningScore = 5;
-    public GameObject winCanvas;   // The whole win UI Canvas (disabled at start)
-    public Text winText;           // "Player X Wins!"
-    public GameObject gameplay;    // Parent object that contains all gameplay objects
+    [Header("UI")]
+    public Text scoreTextP1;
+    public Text scoreTextP2;
 
-    private Dictionary<int, int> playerScores = new Dictionary<int, int>();
-    private bool gameOver = false;
+    [Header("Win Screen UI")]
+    public GameObject winCanvas;
+    public Text winText;
+
+    [Header("Gameplay Settings")]
+    public int scoreToWin = 5;
+    public float respawnDelay = 1.5f;
+
+    [Header("Spawn Settings")]
+    public List<Transform> spawnPoints = new List<Transform>();
+    public LayerMask spawnBlockMask;
+    public float spawnCheckRadius = 0.6f;
+    public int maxSpawnAttempts = 12;
+
+    // The Z-depth to force on respawn so visuals render correctly
+    public float respawnZ = 631f;
+
+    private int scoreP1 = 0;
+    private int scoreP2 = 0;
 
     void Start()
     {
-        // Initialize scores and give tanks a reference to this GameManager
-        playerScores.Clear();
-        foreach (var t in tanks)
-        {
-            if (t == null) continue;
-            playerScores[t.playerId] = 0;
-            t.gameManager = this;
-        }
-
-        // Ensure win UI is hidden at start
-        if (winCanvas != null) winCanvas.SetActive(false);
-
         UpdateScoreUI();
+        if (winCanvas != null)
+            winCanvas.SetActive(false);
     }
 
-    /// <summary>
-    /// Called by Health when a tank dies.
-    /// </summary>
-    public void OnTankDestroyed(int destroyedPlayerId, int attackerPlayerId)
+    // Called by Health when a tank dies
+    public void OnTankDestroyed(int deadPlayerId, int attackerId)
     {
-        if (gameOver) return;
+        Debug.Log("OnTankDestroyed: Dead=" + deadPlayerId + ", Attacker=" + attackerId);
 
-        // Award points to attacker if not a self-kill
-        if (attackerPlayerId != destroyedPlayerId)
-        {
-            if (playerScores.ContainsKey(attackerPlayerId))
-                playerScores[attackerPlayerId]++;
-        }
+        if (attackerId == 1) scoreP1++;
+        if (attackerId == 2) scoreP2++;
 
         UpdateScoreUI();
+        CheckWinCondition();
 
-        // Check for win
-        if (playerScores.ContainsKey(1) && playerScores[1] >= winningScore)
-        {
-            ShowWinScreen(1);
-            return;
-        }
-        if (playerScores.ContainsKey(2) && playerScores[2] >= winningScore)
-        {
-            ShowWinScreen(2);
-            return;
-        }
-
-        // If game still running, respawn the destroyed tank
-        StartCoroutine(RespawnTankCoroutine(destroyedPlayerId, 2f));
+        StartCoroutine(RespawnTankCoroutine(deadPlayerId, respawnDelay));
     }
 
     void UpdateScoreUI()
     {
-        if (player1ScoreText != null && playerScores.ContainsKey(1))
-            player1ScoreText.text = playerScores[1].ToString();
-        if (player2ScoreText != null && playerScores.ContainsKey(2))
-            player2ScoreText.text = playerScores[2].ToString();
+        if (scoreTextP1 != null) scoreTextP1.text = "Player 1: " + scoreP1;
+        if (scoreTextP2 != null) scoreTextP2.text = "Player 2: " + scoreP2;
+    }
+
+    void CheckWinCondition()
+    {
+        if (scoreP1 >= scoreToWin) ShowWinScreen(1);
+        else if (scoreP2 >= scoreToWin) ShowWinScreen(2);
+    }
+
+    void ShowWinScreen(int winningPlayerId)
+    {
+        Time.timeScale = 0f;
+        if (winCanvas != null) winCanvas.SetActive(true);
+        if (winText != null) winText.text = "Player " + winningPlayerId + " Wins!";
+        Debug.Log("ShowWinScreen: Player " + winningPlayerId + " Wins!");
     }
 
     IEnumerator RespawnTankCoroutine(int playerId, float delay)
     {
         yield return new WaitForSeconds(delay);
-        // find the Health component for this player and call Respawn
-        Health h = tanks.Find(t => t != null && t.playerId == playerId);
-        if (h != null)
+
+        // Find the Health object for this playerId (safe loop to avoid LINQ/lambda issues)
+        Health tank = null;
+        if (tanks != null)
         {
-            h.Respawn();
-            // Optional: reset position & rotation if you have a spawn system
-            h.transform.position = GetSpawnPosition(playerId);
-            h.transform.rotation = Quaternion.identity;
-            Rigidbody2D rb = h.GetComponent<Rigidbody2D>();
-            if (rb != null) rb.velocity = Vector2.zero;
+            for (int i = 0; i < tanks.Count; i++)
+            {
+                if (tanks[i] != null && tanks[i].playerId == playerId)
+                {
+                    tank = tanks[i];
+                    break;
+                }
+            }
+        }
+
+        if (tank == null)
+        {
+            Debug.LogWarning("Respawn failed — tank not found for playerId: " + playerId);
+            yield break;
+        }
+
+        Vector3 spawnPos = Vector3.zero;
+        bool foundSpot = false;
+
+        // Try random spawn points and ensure no overlap with spawnBlockMask
+        for (int i = 0; i < maxSpawnAttempts; i++)
+        {
+            if (spawnPoints == null || spawnPoints.Count == 0) break;
+
+            Transform candidate = spawnPoints[Random.Range(0, spawnPoints.Count)];
+            if (candidate == null) continue;
+
+            Vector3 candidatePos = candidate.position;
+
+            // Check 2D overlap; adjust Z later
+            Collider2D[] hits = Physics2D.OverlapCircleAll(candidatePos, spawnCheckRadius, spawnBlockMask);
+            if (hits == null || hits.Length == 0)
+            {
+                spawnPos = candidatePos;
+                foundSpot = true;
+                break;
+            }
+        }
+
+        // Fallback if nothing found
+        if (!foundSpot)
+        {
+            spawnPos = GetFallbackSpawn(playerId);
+            Debug.LogWarning("No valid random spawn — using fallback for player " + playerId);
+        }
+
+        // Force correct Z depth for visuals
+        spawnPos.z = respawnZ;
+
+        // Place tank at spawn position before enabling visuals/respawn logic
+        tank.transform.position = spawnPos;
+        tank.transform.rotation = Quaternion.identity;
+
+        // Reset physics to avoid carryover motion
+        Rigidbody2D rb = tank.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        // Ensure root object is active before calling Respawn
+        if (!tank.gameObject.activeSelf)
+            tank.gameObject.SetActive(true);
+
+        // Call Respawn on Health to reset HP and re-enable visuals (Health.Respawn should re-enable renderers/animators)
+        tank.Respawn();
+
+        Debug.Log("[GameManager] Respawned Player " + playerId + " at " + spawnPos);
+    }
+
+    Vector3 GetFallbackSpawn(int playerId)
+    {
+        // keep fallback Z at respawnZ
+        Vector3 fallback = Vector3.zero;
+        if (playerId == 1) fallback = new Vector3(-4f, -4f, respawnZ);
+        else if (playerId == 2) fallback = new Vector3(4f, 4f, respawnZ);
+        else fallback = new Vector3(0f, 0f, respawnZ);
+
+        return fallback;
+    }
+
+    public void ReturnToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    // Optional: draw spawn-check radius gizmos in editor for convenience
+#if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        if (spawnPoints == null) return;
+        Gizmos.color = Color.yellow;
+        foreach (var sp in spawnPoints)
+        {
+            if (sp == null) continue;
+            Vector3 p = sp.position;
+            p.z = respawnZ;
+            Gizmos.DrawWireSphere(p, spawnCheckRadius);
         }
     }
-
-    Vector3 GetSpawnPosition(int playerId)
-    {
-        // Quick default spawn points — change to your own spawn logic
-        if (playerId == 1) return new Vector3(-4f, -4f, 0f);
-        if (playerId == 2) return new Vector3(4f, 4f, 0f);
-        return Vector3.zero;
-    }
-
-    void ShowWinScreen(int winningPlayerId)
-    {
-        gameOver = true;
-
-        // Stop gameplay objects so nothing moves/interacts
-        if (gameplay != null) gameplay.SetActive(false);
-
-        // Show win UI
-        if (winCanvas != null) winCanvas.SetActive(true);
-        if (winText != null) winText.text = "Player " + winningPlayerId + " Wins!";
-    }
-
-    // UI button: restart current scene
-    public void RestartGame()
-    {
-        // Optional: enable gameplay again immediately on restart
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    // UI button: go back to main menu (replace with your menu scene name)
-    public void BackToMenu(string menuSceneName = "MainMenu")
-    {
-        SceneManager.LoadScene(menuSceneName);
-    }
+#endif
 }
