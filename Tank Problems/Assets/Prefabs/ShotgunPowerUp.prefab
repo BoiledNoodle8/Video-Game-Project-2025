@@ -125,9 +125,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8acda37b9f571e42b2a9dc8d2d21354, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pellets: 3
-  spreadAngle: 10
-  duration: 10
+  pellets: 4
+  spreadAngle: 20
+  duration: 4
   pickupEffectPrefab: {fileID: 0}
   pickupSound: {fileID: 0}
   pickupSoundVolume: 0

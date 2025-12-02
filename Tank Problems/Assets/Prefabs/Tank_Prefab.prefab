@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 5046360731643188747}
   - component: {fileID: 5937401282429397625}
   - component: {fileID: 4366690270929871612}
+  - component: {fileID: -6243900529354344592}
   m_Layer: 8
   m_Name: Tank_Prefab
   m_TagString: Untagged
@@ -189,11 +190,20 @@ MonoBehaviour:
   driveSpeed: 6
   turnSpeed: 180
   bulletPrefab: {fileID: 0}
+  sniperBulletPrefab: {fileID: 5635143312793538014, guid: 2cdd426182401b148a1ab9f00c89d47b, type: 3}
   firePoint: {fileID: 7366880218050694847}
   bulletSpeed: 12
+  sniperBulletSpeed: 28
   fireCooldown: 0.5
   bulletBounces: 3
   playerId: 0
+  shotgunActive: 0
+  shotgunPellets: 3
+  shotgunSpreadAngle: 20
+  shotgunDuration: 5
+  sniperActive: 0
+  sniperDuration: 6
+  sniperCharges: 0
   forwardKey: 119
   backKey: 115
   leftKey: 97
@@ -215,3 +225,21 @@ MonoBehaviour:
   gameManager: {fileID: 0}
   playerId: 0
   deathEffectPrefab: {fileID: 8367907410985086596, guid: 0b493b97a8e419d46903c1b023460740, type: 3}
+  deathEffectLifetime: 3
+--- !u!114 &-6243900529354344592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8524011411955665231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c56793703097bb48a908384228a0001, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  charges: 0
+  shieldVisualPrefab: {fileID: 0}
+  blockEffectPrefab: {fileID: 0}
+  blockSound: {fileID: 0}
+  blockSoundVolume: 0.9
