@@ -24,7 +24,11 @@ public class TankController : MonoBehaviour
     public float shotgunDuration = 5f;      // default duration for power-up
     Coroutine shotgunCoroutine;
 
-    // Input keys
+    // Only used to push pellets forward while shotgun is active
+    private bool useShotgunOffset = false;
+    private float shotgunSpawnOffset = 0.25f; // tweak if pellets still collide
+
+    // Input keys (can be customized per instance in inspector)
     public KeyCode forwardKey = KeyCode.W;
     public KeyCode backKey = KeyCode.S;
     public KeyCode leftKey = KeyCode.A;
@@ -43,7 +47,7 @@ public class TankController : MonoBehaviour
     {
         fireTimer -= Time.deltaTime;
 
-        // Shooting
+        // Shooting (input handled in Update)
         if (Input.GetKeyDown(shootKey) && fireTimer <= 0f)
         {
             Fire();
@@ -55,15 +59,17 @@ public class TankController : MonoBehaviour
     {
         float forward = 0f;
         if (Input.GetKey(forwardKey)) forward = 1f;
-        if (Input.GetKey(backKey)) forward = -0.6f;
+        if (Input.GetKey(backKey)) forward = -0.6f; // slower reverse
 
         float turn = 0f;
         if (Input.GetKey(leftKey)) turn = 1f;
         if (Input.GetKey(rightKey)) turn = -1f;
 
+        // Movement
         Vector2 move = transform.up * forward * driveSpeed;
         rb.MovePosition(rb.position + move * Time.fixedDeltaTime);
 
+        // Rotation
         float rot = turn * turnSpeed * Time.fixedDeltaTime;
         rb.MoveRotation(rb.rotation + rot);
     }
@@ -99,22 +105,36 @@ public class TankController : MonoBehaviour
 
     void FireShotgun()
     {
-        if (bulletPrefab == null || firePoint == null) return;
+        if (bulletPrefab == null || firePoint == null || shotgunPellets <= 0) return;
 
         float halfSpread = shotgunSpreadAngle / 2f;
 
         for (int i = 0; i < shotgunPellets; i++)
         {
+            // t ranges 0..1 across the pellets so they spread evenly
             float t = (shotgunPellets == 1) ? 0.5f : (float)i / (shotgunPellets - 1);
             float angle = Mathf.Lerp(-halfSpread, halfSpread, t);
 
-            Quaternion rot = transform.rotation * Quaternion.Euler(0, 0, angle);
+            // Compute pellet rotation relative to the tank
+            Quaternion pelletRotation = transform.rotation * Quaternion.Euler(0f, 0f, angle);
 
-            GameObject b = Instantiate(bulletPrefab, firePoint.position, rot);
+            // Spawn position: apply small forward offset only when shotgun offset is active
+            Vector3 spawnPos = firePoint.position;
+            if (useShotgunOffset)
+            {
+                // firePoint.up is the forward direction (consistent with movement)
+                spawnPos += firePoint.up * shotgunSpawnOffset;
+            }
+
+            GameObject b = Instantiate(bulletPrefab, spawnPos, pelletRotation);
             Rigidbody2D brb = b.GetComponent<Rigidbody2D>();
 
             if (brb != null)
-                brb.velocity = b.transform.up * bulletSpeed; // fire from rotated direction
+            {
+                // Bullet should travel along the pellet's forward (up) direction
+                Vector2 dir = pelletRotation * Vector2.up;
+                brb.velocity = dir.normalized * bulletSpeed;
+            }
 
             Bullet bulletScript = b.GetComponent<Bullet>();
             if (bulletScript != null)
@@ -128,13 +148,21 @@ public class TankController : MonoBehaviour
     // ==========================================================
     //  SHOTGUN POWER-UP ACTIVATION
     // ==========================================================
+    /// <summary>
+    /// Call to grant shotgun mode for a duration. This also enables a small forward spawn offset
+    /// to keep pellets from colliding with the firing tank.
+    /// </summary>
     public void ApplyShotgun(int pellets, float spreadAngle, float duration)
     {
-        shotgunPellets = pellets;
-        shotgunSpreadAngle = spreadAngle;
+        shotgunPellets = Mathf.Max(1, pellets);
+        shotgunSpreadAngle = Mathf.Max(0f, spreadAngle);
 
+        // ensure previous coroutine is stopped so duration resets
         if (shotgunCoroutine != null)
             StopCoroutine(shotgunCoroutine);
+
+        // enable offset while shotgun is active
+        useShotgunOffset = true;
 
         shotgunCoroutine = StartCoroutine(ShotgunTimer(duration));
     }
@@ -142,14 +170,23 @@ public class TankController : MonoBehaviour
     IEnumerator ShotgunTimer(float duration)
     {
         shotgunActive = true;
-        yield return new WaitForSeconds(duration);
+        float start = Time.time;
+
+        // Simple timer loop so other systems can still run
+        while (Time.time - start < duration)
+        {
+            yield return null;
+        }
+
         shotgunActive = false;
+        useShotgunOffset = false;
         shotgunCoroutine = null;
     }
 
     // ==========================================================
     //  RESPAWN SUPPORT
     // ==========================================================
+    // Optional: call this to reset for respawn (keeps Rigidbody consistent)
     public void ResetForRespawn(Vector2 position, float rotation)
     {
         rb.position = position;
