@@ -87,7 +87,7 @@ MonoBehaviour:
   lifeTime: 1
   destroyOnHit: 1
   pierceTanks: 1
-  hitEffectPrefab: {fileID: 7207109987891872099, guid: d1dcc4bfbc6000944b2cfb0dd422a8e0, type: 3}
+  hitEffectPrefab: {fileID: 8367907410985086596, guid: 0b493b97a8e419d46903c1b023460740, type: 3}
 --- !u!212 &4098159166893623085
 SpriteRenderer:
   m_ObjectHideFlags: 0

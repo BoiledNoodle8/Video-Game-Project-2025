@@ -239,7 +239,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charges: 0
-  shieldVisualPrefab: {fileID: 0}
+  shieldVisualPrefab: {fileID: 3465881340248046446, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
   blockEffectPrefab: {fileID: 0}
   blockSound: {fileID: 0}
   blockSoundVolume: 0.9

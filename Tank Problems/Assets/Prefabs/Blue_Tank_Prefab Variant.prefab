@@ -13,7 +13,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4030790651947916262, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5384507011739589456, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
       propertyPath: m_RootOrder
@@ -37,7 +37,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5384507011739589456, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -345.10562
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5384507011739589456, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
       propertyPath: m_LocalRotation.w
@@ -78,7 +78,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1319844147770467295, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1881161077287116215, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: playerId
@@ -162,11 +162,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: backKey
-      value: 258
+      value: 106
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: leftKey
-      value: 257
+      value: 104
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: playerId
@@ -174,11 +174,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: rightKey
-      value: 259
+      value: 107
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: shootKey
-      value: 271
+      value: 303
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: turnSpeed
@@ -186,7 +186,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: forwardKey
-      value: 261
+      value: 117
       objectReference: {fileID: 0}
     - target: {fileID: 8423772684532815154, guid: d1135f3fdf4d1f7468516fee3d51169f, type: 3}
       propertyPath: bulletSpeed

@@ -12,6 +12,18 @@ PrefabInstance:
       value: ShieldVisual
       objectReference: {fileID: 0}
     - target: {fileID: 4030790651947916262, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030790651947916262, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
+      propertyPath: m_Color.g
+      value: 0.0035750866
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030790651947916262, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4030790651947916262, guid: 3a2c62eeb1ce43e44bb32acac02441da, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -88,6 +100,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.6981132
       objectReference: {fileID: 0}
+    - target: {fileID: 4296694421659352773, guid: f1f12948302504141844601b5fb04f25, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4366690270929871612, guid: f1f12948302504141844601b5fb04f25, type: 3}
       propertyPath: playerId
       value: 1
@@ -95,6 +111,10 @@ PrefabInstance:
     - target: {fileID: 5937401282429397625, guid: f1f12948302504141844601b5fb04f25, type: 3}
       propertyPath: playerId
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5937401282429397625, guid: f1f12948302504141844601b5fb04f25, type: 3}
+      propertyPath: shootKey
+      value: 304
       objectReference: {fileID: 0}
     - target: {fileID: 5937401282429397625, guid: f1f12948302504141844601b5fb04f25, type: 3}
       propertyPath: driveSpeed
